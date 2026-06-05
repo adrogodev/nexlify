@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "../api/hooks/auth.hook";
+import { useAuth } from "./hooks/auth.hook";
 
 export default function AuthView() {
   const {
