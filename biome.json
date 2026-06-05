@@ -23,7 +23,11 @@
         "noExplicitAny":"off"
       },
       "complexity":{
-        "noUselessEmptyExport":"off"
+        "noUselessEmptyExport":"off",
+        "useLiteralKeys":"off"
+      },
+      "style":{
+        "noNonNullAssertion":"off"
       }
     },
     "domains": {
