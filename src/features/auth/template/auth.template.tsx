@@ -2,7 +2,7 @@
 
 import { useAuth } from "./hooks/auth.hook";
 
-export default function AuthView() {
+export default function AuthTemplate() {
   const {
     username,
     handleUsernameChange,
