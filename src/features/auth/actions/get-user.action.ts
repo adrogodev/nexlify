@@ -1,12 +1,12 @@
 "use server"
 
+import { env } from "node:process";
 import { cookies } from "next/headers";
-import { IUserDataResponse, IUserDataResponseObject } from "./objects"
+import { fetchServerClient } from "@/src/lib/clients/fetch/server/client.serve";
+import { handleApiResponseError } from "@/src/lib/handlers/api-errors.handler";
 import { getObfuscatedCookie } from "@/src/lib/tools";
 import { AUTH_TOKEN } from "@/src/shared/constants";
-import { env } from "process"
-import { fetchApiClient } from "@/src/lib/clients/fetch/fetch.client";
-import { handleApiResponseError } from "@/src/lib/handlers/api-errors.handler";
+import type { IUserDataResponse, IUserDataResponseObject } from "./objects";
 
 export const getUserAction = async (): Promise<{ success: boolean; data?: IUserDataResponse; error?: string }> => {
     const cookie_store = await cookies();
@@ -17,11 +17,7 @@ export const getUserAction = async (): Promise<{ success: boolean; data?: IUserD
     if (!token) return { success: false, error: 'No se encontró el token de autenticación' };
 
     try {
-        const response = await fetchApiClient.get<IUserDataResponseObject>(GET_ADMIN_USER_DATA, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await fetchServerClient.get<IUserDataResponseObject>(GET_ADMIN_USER_DATA);
 
         if (response.status === 200) {
             return { success: true, data: response.data.data };
