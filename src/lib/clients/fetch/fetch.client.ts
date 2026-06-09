@@ -1,6 +1,6 @@
+import { env } from "node:process"
 import { AUTH_TOKEN } from "../../../shared/constants";
 import { FetchApiCore } from "./core/fetch.core";
-import { env } from "process"
 
 const getClientToken = (): Nullable<string> => {
     if (typeof window === 'undefined') return null;
