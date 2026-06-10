@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { PlaceholderComponent } from "@/src/shared/components";
 import { useAppDispatch, useAppSelector } from "@/src/shared/stores";
 import { getUserData, logout, selectUserData } from "@/src/shared/stores/slices/auth.slice";
 
@@ -48,10 +49,12 @@ export default function HomePage() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white gap-6">
+      <PlaceholderComponent name={user?.name!} username={user?.username!}/>
       <h1 className="text-3xl font-bold">nexlify</h1>
 
       <section className="border border-gray-700 rounded-lg p-6 w-80 space-y-3">
         <h2 className="text-lg font-semibold text-center">Datos del usuario</h2>
+
 
         {user && (
           <div className="text-sm space-y-1.5">
