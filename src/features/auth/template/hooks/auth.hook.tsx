@@ -31,7 +31,7 @@ export function useAuth() {
         setError(action.error ?? 'Error desconocido');
         return;
       }
-      router.push("/home");
+      router.push("/dashboard");
     } catch (err) {
       console.error("Network error:", err);
       setError("Error de conexión, intente nuevamente.");

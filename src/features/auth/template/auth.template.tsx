@@ -9,7 +9,6 @@ export default function AuthTemplate() {
     password,
     handlePasswordChange,
     handleClick,
-    isLoading,
     error,
   } = useAuth();
 
