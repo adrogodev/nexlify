@@ -49,7 +49,7 @@ export default function HomePage() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white gap-6">
-      <PlaceholderComponent name={user?.name!} username={user?.username!}/>
+      <PlaceholderComponent />
       <h1 className="text-3xl font-bold">nexlify</h1>
 
       <section className="border border-gray-700 rounded-lg p-6 w-80 space-y-3">
