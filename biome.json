@@ -20,7 +20,9 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noExplicitAny":"off"
+        "noExplicitAny":"off",
+        "noDocumentCookie":"off",
+        "noGlobalIsNan":"off"
       },
       "complexity":{
         "noUselessEmptyExport":"off",
