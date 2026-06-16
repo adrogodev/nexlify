@@ -1,8 +1,8 @@
 "use server"
 
+import { cookies } from "next/headers"
 import { getObfuscatedCookie } from "@/src/lib/tools";
 import { AUTH_TOKEN } from "@/src/shared/constants";
-import { cookies } from "next/headers"
 
 export const logoutAction = async (): Promise<void> => {
     const cookie_store = await cookies();

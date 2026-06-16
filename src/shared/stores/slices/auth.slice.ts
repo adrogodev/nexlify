@@ -1,7 +1,7 @@
+import { getUserAction } from "@/src/features/auth/actions/get-user.action";
 import type { IUserDataResponse } from "@/src/features/auth/actions/objects";
 import { appSlice } from "../config";
-import { TStatus, TUserState } from "../types";
-import { getUserAction } from "@/src/features/auth/actions/get-user.action";
+import type { TStatus, TUserState } from "../types";
 
 type AuthState = {
   user_data: {
