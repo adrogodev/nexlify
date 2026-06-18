@@ -1,5 +1,7 @@
 ﻿import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+import { useAppDispatch } from "@/src/shared/stores";
+import { getUserData } from "@/src/shared/stores/slices/auth.slice";
 import { authAction } from "../../actions";
 
 export function useAuth() {
@@ -19,6 +21,8 @@ export function useAuth() {
     setError(null);
   }, []);
 
+  const dispatch = useAppDispatch();
+
   const handleClick = useCallback(async () => {
     setError(null);
     setIsLoading(true);
@@ -31,6 +35,8 @@ export function useAuth() {
         setError(action.error ?? 'Error desconocido');
         return;
       }
+
+      await dispatch(getUserData());
       router.push("/dashboard");
     } catch (err) {
       console.error("Network error:", err);
@@ -38,7 +44,7 @@ export function useAuth() {
     } finally {
       setIsLoading(false);
     }
-  }, [username, password, router]);
+  }, [username, password, router, dispatch]);
 
   return {
     username,
