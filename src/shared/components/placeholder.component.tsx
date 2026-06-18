@@ -1,3 +1,5 @@
+"use client";
+
 import { useAppSelector } from "@/src/shared/stores";
 import { selectUserData } from "@/src/shared/stores/slices/auth.slice";
 
