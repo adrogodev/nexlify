@@ -1,11 +1,9 @@
 "use client";
 
-import { HeaderComponent } from "@/src/shared/components"
-
 export const HomeTemplate = () => {
     return (
-        <section>
-            <HeaderComponent />
+        <section className="m-5">
+            <p>Home template</p>
         </section>
     )
 }
