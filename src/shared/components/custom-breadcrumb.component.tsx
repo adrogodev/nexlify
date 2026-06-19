@@ -22,18 +22,18 @@ export const CustomBreadcrumb = () => {
     const segments = path.slice(1);
 
     const mainSegment = segments[0];
-    const pathName = mainSegment ? getLabel(mainSegment) : "";
+    const pathName = mainSegment ? getLabel(mainSegment) : "Home";
 
 
     const secondarySegment = segments[1];
     const subPath = (secondarySegment && !isId(secondarySegment)) ? 'Detalles' : "";
 
     return (
-        <div className="flex items-center w-full">
+        <div className="w-full flex items-center py-3">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem className="hidden md:block">
-                        <BreadcrumbPage className={subPath ? 'cursor-pointer' : ''} onClick={subPath ? () => router.back() : undefined}>
+                        <BreadcrumbPage className={`text-xs font-bold ${subPath ? 'cursor-pointer' : ''}`} onClick={subPath ? () => router.back() : undefined}>
                             {pathName}
                         </BreadcrumbPage>
                     </BreadcrumbItem>
