@@ -3,8 +3,7 @@
 import type { LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/src/lib/utils"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "../ui"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger, SidebarGroup, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "../ui"
 
 type NavComponentProps = {
     items: {
@@ -16,20 +15,22 @@ type NavComponentProps = {
             title: string,
             url: string
         }[]
-    }[]
+    }[],
+    children?: React.ReactNode
 }
 
-export const NavComponent = ({ items }: NavComponentProps) => {
+export const NavComponent = ({ items, children }: NavComponentProps) => {
     const pathname = usePathname();
 
     return (
         <SidebarGroup>
             {/* <SidebarGroupLabel>Módulos</SidebarGroupLabel> */}
             <SidebarMenu>
+                {children}
                 {items.map((item) => (
                     <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
                         <SidebarMenuItem>
-                            <SidebarMenuButton asChild tooltip={item.title} className={cn("", pathname.includes(item.url) && "bg-gray-100")}>
+                            <SidebarMenuButton asChild tooltip={item.title} isActive={pathname.includes(item.url)}>
                                 <Link href={item.url}>
                                     <item.icon />
                                     <span>{item.title}</span>
