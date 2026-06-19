@@ -14,7 +14,7 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "Nexlify",
   icons: {
-    icon: "/nexlifly.svg",
+    icon: "/assets/svgs/icon.svg",
   },
 };
 
