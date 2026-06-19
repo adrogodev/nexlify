@@ -1,4 +1,4 @@
-import { IBaseResponse } from "@/src/shared/interfaces";
+import type { IBaseResponse } from "@/src/shared/interfaces";
 
 export interface IAuthResponse {
   ip_connection: string;
