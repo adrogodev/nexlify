@@ -11,6 +11,6 @@ export interface IGetClientsData {
     cell_phone?: Nullable<string>;
 }
 
-export interface IGetClientsDataResponse extends PaginationResponse<IGetClientsDataResponse[]> { }
+export interface IGetClientsDataResponse extends PaginationResponse<IGetClientsData[]> { }
 
 export interface IGetClientsDataResponseObject extends IBaseResponse<IGetClientsDataResponse> { }
