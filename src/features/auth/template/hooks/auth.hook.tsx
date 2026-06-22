@@ -30,8 +30,7 @@ export function useAuth() {
     try {
       const action = await authAction({ username, password });
       if (!action.ok) {
-        console.log(action);
-
+        // console.log(action);
         setError(action.error ?? 'Error desconocido');
         return;
       }
