@@ -1,7 +1,35 @@
 import type { PayloadAction } from "@reduxjs/toolkit"
 import { getClientsAction } from "@/src/features/dashboard/clients/actions";
 import type { GetClientsParams } from "@/src/features/dashboard/clients/actions/objects/requests";
+import type { IGetClientsData } from "@/src/features/dashboard/clients/actions/objects/responses";
 import { appSlice } from "../config";
+import type { TStatus } from "../types";
+
+type ClientsState = {
+    clientsListView: {
+        clients: IGetClientsData[];
+        status: TStatus;
+        error?: Nullable<string>;
+        params: GetClientsParams;
+        total_items: number;
+        page: Nullable<number>
+    }
+}
+
+
+const initialState: ClientsState = {
+    clientsListView: {
+        clients: [],
+        status: 'idle',
+        error: null,
+        params: {
+            page: 1,
+            size: 10
+        },
+        total_items: 0,
+        page: null
+    }
+}
 
 const clientsSlice = appSlice({
     name: 'clients',
@@ -40,5 +68,14 @@ const clientsSlice = appSlice({
         setClientsParams: create.reducer((state, action: PayloadAction<GetClientsParams>) => {
             state.clientsListView.params = action.payload;
         })
-    })
-})
+    }),
+    selectors: {
+        selectClientsListView: (state) => state.clientsListView
+    }
+});
+
+export const { fetchClients, setClientsPage, setClientsParams } = clientsSlice.actions;
+export const { selectClientsListView } = clientsSlice.selectors;
+
+export default clientsSlice.reducer;
+
