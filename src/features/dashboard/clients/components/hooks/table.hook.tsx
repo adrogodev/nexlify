@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/src/shared/stores";
 import {
   fetchClients,
@@ -19,13 +19,19 @@ export function useClientsTable() {
   const size = params.size ?? 10;
   const total_page = Math.ceil(total_items / size);
 
-  const handlePageChange = (new_page: number) => {
-    dispatch(setClientsPage(new_page));
-  };
+  const handlePageChange = useCallback(
+    (new_page: number) => {
+      dispatch(setClientsPage(new_page));
+    },
+    [dispatch],
+  );
 
-  const handleFilterChange = (new_filters: GetClientsParams) => {
-    dispatch(setClientsParams({ ...new_filters, page: current_page, size }));
-  };
+  const handleFilterChange = useCallback(
+    (new_filters: GetClientsParams) => {
+      dispatch(setClientsParams({ ...new_filters, page: current_page, size }));
+    },
+    [dispatch, current_page, size],
+  );
 
   useEffect(() => {
     dispatch(fetchClients(params));

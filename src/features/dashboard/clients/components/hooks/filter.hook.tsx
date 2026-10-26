@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDebounce } from "@/src/shared/hooks";
 import type { GetClientsParams } from "../../actions/objects/requests";
@@ -29,6 +29,11 @@ export function useClientsTableFilter({
 
   const debounced_name = useDebounce(name, 500);
 
+  // Stable callback ref: keeps the effect below independent of the handler's
+  // render-time identity so filter changes only refetch on real input changes.
+  const on_filter_change_ref = useRef(onFilterChange);
+  on_filter_change_ref.current = onFilterChange;
+
   const handleReset = () => {
     reset({
       id_state: undefined,
@@ -50,8 +55,8 @@ export function useClientsTableFilter({
       query.id_number = Number(id_number);
     if (debounced_name) query.name = debounced_name;
 
-    onFilterChange(query);
-  }, [size, id_state, id_type, id_number, debounced_name, onFilterChange]);
+    on_filter_change_ref.current(query);
+  }, [size, id_state, id_type, id_number, debounced_name]);
 
   return {
     filterForm,
