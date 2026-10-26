@@ -1,9 +1,11 @@
 "use client";
 
-export function ClientsTemplate() {
-    return (
-        <section>
+import { ClientsTableComponent } from "../components/table";
 
-        </section>
-    )
+export function ClientsTemplate() {
+  return (
+    <section className="w-full h-full">
+      <ClientsTableComponent />
+    </section>
+  );
 }
