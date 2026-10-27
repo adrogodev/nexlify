@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button, Skeleton } from "@/src/shared/ui";
 import type { IGetClientsData } from "../actions/objects/responses";
 import { ClientsFilterComponent } from "./filter";
@@ -76,7 +77,15 @@ export const ClientsTableComponent = () => {
                   key={client.id_client}
                   className="border-t border-gray-100 hover:bg-gray-50"
                 >
-                  <td className="px-4 py-3">{client.name}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/dashboard/clients/${client.id_client}`}
+                      className="font-medium underline-offset-2 hover:underline focus-visible:underline outline-none"
+                      aria-label={`Ver detalle de ${client.name}`}
+                    >
+                      {client.name}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     {client.id_type} {client.id_number}
                   </td>

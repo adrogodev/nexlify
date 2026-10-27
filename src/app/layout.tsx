@@ -4,12 +4,10 @@ import "./globals.css";
 import { AuthGuard } from "@/src/shared/guard/auth-guard";
 import { Providers } from "@/src/shared/stores/provider";
 
-
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
 });
-
 
 export const metadata: Metadata = {
   title: "Nexlify",

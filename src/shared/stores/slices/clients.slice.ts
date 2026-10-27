@@ -1,7 +1,11 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { getClientsAction } from "@/src/features/dashboard/clients/actions";
+import {
+  getClientDetailAction,
+  getClientsAction,
+} from "@/src/features/dashboard/clients/actions";
 import type { GetClientsParams } from "@/src/features/dashboard/clients/actions/objects/requests";
 import type { IGetClientsData } from "@/src/features/dashboard/clients/actions/objects/responses";
+import type { IGetClientDetailData } from "@/src/features/dashboard/clients/actions/objects/responses/get-client-detail.response";
 import { appSlice } from "../config";
 import type { TStatus } from "../types";
 
@@ -13,6 +17,11 @@ type ClientsState = {
     params: GetClientsParams;
     total_items: number;
     page: Nullable<number>;
+  };
+  clientsDetailView: {
+    data: Nullable<IGetClientDetailData>;
+    status: TStatus;
+    error?: Nullable<string>;
   };
 };
 
@@ -27,6 +36,11 @@ const initialState: ClientsState = {
     },
     total_items: 0,
     page: null,
+  },
+  clientsDetailView: {
+    data: null,
+    status: "idle",
+    error: null,
   },
 };
 
@@ -79,14 +93,47 @@ const clientsSlice = appSlice({
         state.clientsListView.params = action.payload;
       },
     ),
+
+    // ===== CLIENT DETAIL =====
+    fetchClientDetail: create.asyncThunk(
+      async (id_client: number) => {
+        return await getClientDetailAction(id_client);
+      },
+      {
+        pending: (state) => {
+          state.clientsDetailView.status = "loading";
+          state.clientsDetailView.error = null;
+        },
+        rejected: (state) => {
+          state.clientsDetailView.status = "error";
+        },
+        fulfilled: (state, action) => {
+          if (!action.payload.ok) {
+            state.clientsDetailView.status = "error";
+            if ("error" in action.payload) {
+              state.clientsDetailView.error = String(action.payload.error);
+            }
+            return;
+          }
+          state.clientsDetailView.status = "success";
+          state.clientsDetailView.data = action.payload.data!;
+        },
+      },
+    ),
   }),
   selectors: {
     selectClientsListView: (state) => state.clientsListView,
+    selectClientsDetailView: (state) => state.clientsDetailView,
   },
 });
 
-export const { fetchClients, setClientsPage, setClientsParams } =
-  clientsSlice.actions;
-export const { selectClientsListView } = clientsSlice.selectors;
+export const {
+  fetchClients,
+  setClientsPage,
+  setClientsParams,
+  fetchClientDetail,
+} = clientsSlice.actions;
+export const { selectClientsListView, selectClientsDetailView } =
+  clientsSlice.selectors;
 
 export default clientsSlice.reducer;
