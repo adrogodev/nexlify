@@ -5,7 +5,7 @@ export interface IAuthResponse {
   token: string;
 }
 
-export interface IAuthResponseObject extends IBaseResponse<IAuthResponse> { }
+export interface IAuthResponseObject extends IBaseResponse<IAuthResponse> {}
 
 export interface IUserDataResponse {
   is_admin: boolean;
@@ -16,4 +16,5 @@ export interface IUserDataResponse {
   is_active: boolean | null;
 }
 
-export interface IUserDataResponseObject extends IBaseResponse<IUserDataResponse> { }
+export interface IUserDataResponseObject
+  extends IBaseResponse<IUserDataResponse> {}

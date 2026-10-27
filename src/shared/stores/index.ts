@@ -1,15 +1,19 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { type TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { configureStore } from "@reduxjs/toolkit";
+import {
+  type TypedUseSelectorHook,
+  useDispatch,
+  useSelector,
+} from "react-redux";
 
-import authReducer from './slices/auth.slice';
-import clientsReducer from './slices/clients.slice';
+import authReducer from "./slices/auth.slice";
+import clientsReducer from "./slices/clients.slice";
 
 export const store = configureStore({
-    reducer: {
-        ['auth']: authReducer,
-        ['clients']: clientsReducer,
-    }
-})
+  reducer: {
+    ["auth"]: authReducer,
+    ["clients"]: clientsReducer,
+  },
+});
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

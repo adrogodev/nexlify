@@ -1,1 +1,1 @@
-export * from './slice.config';
+export * from "./slice.config";

@@ -8,9 +8,5 @@ interface Prop {
 }
 
 export const Providers = ({ children }: Prop) => {
-  return (
-    <Provider store={store}>
-      {children}
-    </Provider>
-  )
-}
+  return <Provider store={store}>{children}</Provider>;
+};

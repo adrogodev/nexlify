@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { AuthGuard } from "@/src/shared/guard/auth-guard";
 import { Providers } from "@/src/shared/stores/provider";
@@ -27,6 +28,7 @@ export default function RootLayout({
         <Providers>
           <AuthGuard>
             <main>{children}</main>
+            <Toaster position="top-right" richColors />
           </AuthGuard>
         </Providers>
       </body>

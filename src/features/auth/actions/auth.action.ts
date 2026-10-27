@@ -8,29 +8,36 @@ import { getObfuscatedCookie } from "@/src/lib/tools";
 import { AUTH_TOKEN } from "@/src/shared/constants";
 import type { IAuthResponseObject } from "./objects";
 
-
-export const authAction = async ({ username, password }: { username: string, password: string }) => {
-
-  const AUTH = `${env.ADMIN_USER_BASE}${env.AUTH_ADMIN_USER}`
+export const authAction = async ({
+  username,
+  password,
+}: {
+  username: string;
+  password: string;
+}) => {
+  const AUTH = `${env.ADMIN_USER_BASE}${env.AUTH_ADMIN_USER}`;
   const obfuscated_cookie_name = getObfuscatedCookie(AUTH_TOKEN);
 
   try {
-    const response = await fetchServerClient.post<IAuthResponseObject>(AUTH, { username, password });
+    const response = await fetchServerClient.post<IAuthResponseObject>(AUTH, {
+      username,
+      password,
+    });
     const { data } = response.data;
     if (response.status === 200 && data?.token) {
-      (await cookies()).set(obfuscated_cookie_name, data.token ?? '', {
+      (await cookies()).set(obfuscated_cookie_name, data.token ?? "", {
         httpOnly: true,
-        secure: env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
+        secure: env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
       });
 
       return { ok: true };
     }
 
-    return { ok: false, error: 'Hubo un error al iniciar sesión' };
+    return { ok: false, error: "Hubo un error al iniciar sesión" };
   } catch (error) {
     const error_response = await handleApiResponseError(error);
-    return { ok: false, error: error_response }
+    return { ok: false, error: error_response };
   }
-}
+};

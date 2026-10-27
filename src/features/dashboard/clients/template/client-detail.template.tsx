@@ -1,12 +1,17 @@
 "use client";
 
 import { Link2 } from "lucide-react";
-import { useEffect } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/src/shared/stores";
 import {
   fetchClientDetail,
   selectClientsDetailView,
 } from "@/src/shared/stores/slices";
+import { Button } from "@/src/shared/ui";
+import { updateClientStateAction } from "../actions/update-client-state.action";
+import { CLIENT_STATE_OPTIONS } from "../constants/client-states.constants";
 
 export interface ClientDetailTemplateProps {
   id_client: number;
@@ -18,9 +23,39 @@ export function ClientDetailTemplate({ id_client }: ClientDetailTemplateProps) {
   const dispatch = useAppDispatch();
   const { data, status, error } = useAppSelector(selectClientsDetailView);
 
+  // Target state pick; "" means no change requested yet. The refresh flow
+  // runs through fetchClientDetail so the view always reflects the backend.
+  const [next_state, set_next_state] = useState("");
+  const [is_updating, set_is_updating] = useState(false);
+
   useEffect(() => {
     dispatch(fetchClientDetail(id_client));
+    set_next_state("");
   }, [dispatch, id_client]);
+
+  const handle_state_change = async () => {
+    if (!data || next_state === "") return;
+    set_is_updating(true);
+    const result = await updateClientStateAction({
+      id_client: data.id_client,
+      id_client_state: Number(next_state),
+    });
+    set_is_updating(false);
+
+    if (result.ok) {
+      toast.success(result.message ?? "Estado actualizado");
+      dispatch(fetchClientDetail(id_client));
+      set_next_state("");
+    } else {
+      const detail =
+        "error" in result
+          ? `${result.message ?? ""} ${result.error ?? ""}`.trim()
+          : result.message;
+      toast.error(detail || "No se pudo actualizar el estado");
+    }
+  };
+
+  const current_state_value = data ? String(data.id_state) : "";
 
   if (status === "loading" || status === "idle") {
     return (
@@ -71,13 +106,51 @@ export function ClientDetailTemplate({ id_client }: ClientDetailTemplateProps) {
   return (
     <section className="w-full h-full">
       <header className="flex items-center justify-between gap-2 p-4">
-        <h1 className="text-xl font-bold">
-          <Link2 className="mr-2 inline h-4 w-4" aria-hidden="true" />
-          {data.name}
-        </h1>
-        <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-          {data.state}
-        </span>
+        <div className="flex items-center gap-3">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            aria-label="Volver al listado de clientes"
+          >
+            <Link href="/dashboard/clients">←</Link>
+          </Button>
+          <h1 className="text-xl font-bold">
+            <Link2 className="mr-2 inline h-4 w-4" aria-hidden="true" />
+            {data.name}
+          </h1>
+          <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+            {data.state}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="next_state" className="sr-only">
+            Cambiar estado del cliente
+          </label>
+          <select
+            id="next_state"
+            className="h-8 rounded-md border border-input bg-transparent px-2 text-sm shadow-xs focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+            value={next_state}
+            onChange={(e) => set_next_state(e.target.value)}
+          >
+            <option value="">Cambiar estado…</option>
+            {CLIENT_STATE_OPTIONS.filter(
+              (option) => option.value !== Number(current_state_value),
+            ).map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <Button
+            size="sm"
+            onClick={handle_state_change}
+            disabled={next_state === "" || is_updating}
+          >
+            {is_updating ? "Actualizando…" : "Aplicar"}
+          </Button>
+        </div>
       </header>
 
       <dl className="grid grid-cols-1 gap-4 p-4 shadow-sm border border-gray-100 rounded-md md:grid-cols-2">

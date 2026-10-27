@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Button, Skeleton } from "@/src/shared/ui";
 import type { IGetClientsData } from "../actions/objects/responses";
@@ -30,6 +31,20 @@ export const ClientsTableComponent = () => {
 
   return (
     <div className="space-y-0 h-full flex flex-col">
+      <div className="flex items-center justify-between p-3">
+        <h1 className="text-lg font-bold">Clientes</h1>
+        <Button asChild size="sm">
+          <Link
+            href="/dashboard/clients/new"
+            aria-label="Registrar nuevo cliente"
+            className="flex items-center gap-1"
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Nuevo cliente
+          </Link>
+        </Button>
+      </div>
+
       <ClientsFilterComponent
         props={{
           size: params.size ?? 10,

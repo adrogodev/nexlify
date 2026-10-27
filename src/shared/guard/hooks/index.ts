@@ -1,1 +1,1 @@
-export * from './auth-guard.hook';
+export * from "./auth-guard.hook";
