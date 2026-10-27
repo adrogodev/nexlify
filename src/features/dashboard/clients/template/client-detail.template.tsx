@@ -10,6 +10,8 @@ import {
   selectClientsDetailView,
 } from "@/src/shared/stores/slices";
 import { Button } from "@/src/shared/ui";
+import type { IGetClientDetailData } from "../actions/objects/responses";
+import { updateClientAction } from "../actions/update-client.action";
 import { updateClientStateAction } from "../actions/update-client-state.action";
 import { CLIENT_STATE_OPTIONS } from "../constants/client-states.constants";
 
@@ -161,7 +163,154 @@ export function ClientDetailTemplate({ id_client }: ClientDetailTemplateProps) {
           </div>
         ))}
       </dl>
+
+      <ClientEditSection
+        data={data}
+        disabled={is_updating}
+        on_saved_changed={() => dispatch(fetchClientDetail(id_client))}
+      />
     </section>
+  );
+}
+
+function ClientEditSection({
+  data,
+  disabled,
+  on_saved_changed,
+}: {
+  data: NonNullable<IGetClientDetailData>;
+  disabled: boolean;
+  on_saved_changed: () => void;
+}) {
+  const [is_editing, set_is_editing] = useState(false);
+  const [draft, set_draft] = useState({
+    name: data.name,
+    email: data.email,
+    cell_callsign: data.cell_callsign,
+    cell_phone: data.cell_phone,
+  });
+  const [is_saving, set_is_saving] = useState(false);
+
+  const input_class =
+    "h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none";
+
+  const handle_save = async () => {
+    set_is_saving(true);
+    const result = await updateClientAction({
+      id_client: data.id_client,
+      name: draft.name,
+      email: draft.email,
+      cell_callsign: draft.cell_callsign,
+      cell_phone: draft.cell_phone,
+    });
+    set_is_saving(false);
+
+    if (result.ok) {
+      toast.success(result.message ?? "Cliente actualizado");
+      set_is_editing(false);
+      on_saved_changed();
+    } else {
+      const detail =
+        "error" in result
+          ? `${result.message ?? ""} ${result.error ?? ""}`.trim()
+          : result.message;
+      toast.error(detail || "No se pudo actualizar el cliente");
+    }
+  };
+
+  if (!is_editing) {
+    return (
+      <div className="p-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => set_is_editing(true)}
+        >
+          Editar datos
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handle_save();
+      }}
+      className="grid grid-cols-1 gap-3 border border-gray-100 rounded-md p-4 sm:grid-cols-2 bg-white"
+      aria-label="Editar datos del cliente"
+    >
+      <div className="flex flex-col gap-1">
+        <label htmlFor="edit-name" className="text-sm font-medium">
+          Nombre
+        </label>
+        <input
+          id="edit-name"
+          className={input_class}
+          value={draft.name}
+          onChange={(e) => set_draft({ ...draft, name: e.target.value })}
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="edit-email" className="text-sm font-medium">
+          Email
+        </label>
+        <input
+          id="edit-email"
+          className={input_class}
+          value={draft.email}
+          onChange={(e) => set_draft({ ...draft, email: e.target.value })}
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="edit-cell-callsign" className="text-sm font-medium">
+          Indicativo
+        </label>
+        <input
+          id="edit-cell-callsign"
+          className={input_class}
+          value={draft.cell_callsign}
+          onChange={(e) =>
+            set_draft({ ...draft, cell_callsign: e.target.value })
+          }
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="edit-cell-phone" className="text-sm font-medium">
+          Teléfono
+        </label>
+        <input
+          id="edit-cell-phone"
+          className={input_class}
+          value={draft.cell_phone}
+          onChange={(e) => set_draft({ ...draft, cell_phone: e.target.value })}
+        />
+      </div>
+
+      <div className="flex gap-2 justify-end sm:col-span-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            set_is_editing(false);
+            set_draft({
+              name: data.name,
+              email: data.email,
+              cell_callsign: data.cell_callsign,
+              cell_phone: data.cell_phone,
+            });
+          }}
+          disabled={is_saving}
+        >
+          Cancelar
+        </Button>
+        <Button type="submit" size="sm" disabled={is_saving || disabled}>
+          {is_saving ? "Guardando…" : "Guardar cambios"}
+        </Button>
+      </div>
+    </form>
   );
 }
 
