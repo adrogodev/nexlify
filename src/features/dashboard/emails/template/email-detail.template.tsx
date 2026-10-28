@@ -1,9 +1,14 @@
 "use client";
 
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/src/shared/ui";
 import type { IEmailDetail } from "../actions/email.actions";
-import { getEmailDetailAction } from "../actions/email.actions";
+import {
+  downloadEmailAttachmentAction,
+  getEmailDetailAction,
+} from "../actions/email.actions";
 import { EmailDetailActions } from "./email-actions.templates";
 
 const SKELETON_ROWS = [1, 2, 3, 4, 5, 6] as const;
@@ -11,7 +16,44 @@ const SKELETON_ROWS = [1, 2, 3, 4, 5, 6] as const;
 export function EmailDetailTemplate({ email_id }: { email_id: string }) {
   const [detail, set_detail] = useState<IEmailDetail | null>(null);
   const [is_loading, set_is_loading] = useState(true);
+  const [is_attachment_loading, set_is_attachment_loading] = useState<
+    number | null
+  >(null);
   const [error, set_error] = useState<string | null>(null);
+
+  const handle_download_attachment = useCallback(
+    async (attachment_index: number) => {
+      set_is_attachment_loading(attachment_index);
+      const result = await downloadEmailAttachmentAction(
+        email_id,
+        attachment_index,
+      );
+      set_is_attachment_loading(null);
+      if (!result.ok || !result.data?.content_base64) return;
+
+      try {
+        const binary_string = atob(result.data.content_base64);
+        const bytes = new Uint8Array(binary_string.length);
+        for (let i = 0; i < binary_string.length; i += 1) {
+          bytes[i] = binary_string.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], {
+          type: result.data.content_type || "application/octet-stream",
+        });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = result.data.filename || `adjunto-${attachment_index}`;
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      } catch (_err) {
+        set_error("No se pudo procesar la descarga del adjunto");
+      }
+    },
+    [email_id],
+  );
 
   const load = useCallback(async () => {
     set_is_loading(true);
@@ -116,10 +158,28 @@ export function EmailDetailTemplate({ email_id }: { email_id: string }) {
             Adjuntos ({detail.attachments.length})
           </h2>
           <ul className="text-sm space-y-1">
-            {detail.attachments.map((att) => (
-              <li key={att.filename}>
-                {att.filename} — {att.content_type ?? "?"}{" "}
-                {att.size_bytes != null ? `(${att.size_bytes} bytes)` : ""}
+            {detail.attachments.map((att, index) => (
+              <li
+                key={`${att.filename}-${index}`}
+                className="flex items-center justify-between gap-2"
+              >
+                <span>
+                  {att.filename} — {att.content_type ?? "?"}{" "}
+                  {att.size_bytes != null ? `(${att.size_bytes} bytes)` : ""}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={is_attachment_loading === index}
+                  onClick={() => handle_download_attachment(index)}
+                  aria-label={`Descargar adjunto ${att.filename}`}
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  {is_attachment_loading === index
+                    ? "Descargando…"
+                    : "Descargar"}
+                </Button>
               </li>
             ))}
           </ul>

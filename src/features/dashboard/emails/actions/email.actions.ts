@@ -108,6 +108,39 @@ export const getEmailDetailAction = async (email_id: string) => {
   }
 };
 
+export interface IEmailAttachmentDownload {
+  filename: string;
+  content_type: string;
+  size_bytes: Nullable<number>;
+  content_base64: string;
+}
+
+export const downloadEmailAttachmentAction = async (
+  email_id: string,
+  attachment_index: number,
+) => {
+  const GET_ATTACHMENT = `/email/${email_id}/attachments/${attachment_index}`;
+
+  try {
+    const response =
+      await fetchServerClient.get<IBaseResponse<IEmailAttachmentDownload>>(
+        GET_ATTACHMENT,
+      );
+    if (response.status !== 200) {
+      return {
+        ok: false,
+        message:
+          response.data.message ?? "No se pudo descargar el adjunto del email",
+      };
+    }
+
+    return { ok: true, data: response.data.data };
+  } catch (error) {
+    const error_response = await handleApiResponseError(error);
+    return { ok: false, error: error_response };
+  }
+};
+
 export interface ISendEmailParams {
   from: string;
   to: string[];
