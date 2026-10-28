@@ -2,40 +2,70 @@
 
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button, Skeleton } from "@/src/shared/ui";
 import type { IUserInfo } from "../actions/users.actions";
-import { getUsersAction } from "../actions/users.actions";
+import {
+  getUsersAction,
+  updateUserStateAction,
+} from "../actions/users.actions";
 
 const SKELETON_ROWS = [1, 2, 3, 4, 5] as const;
 const LIMITED_SIZE = 10;
 
-const TABLE_HEADERS = ["Nombre", "Email", "Teléfono", "Cliente"] as const;
+const TABLE_HEADERS = [
+  "Nombre",
+  "Email",
+  "Teléfono",
+  "Cliente",
+  "Estado",
+] as const;
 
 export function UsersTemplate() {
   const [items, set_items] = useState<IUserInfo[]>([]);
   const [total, set_total] = useState(0);
   const [page, set_page] = useState(1);
   const [is_loading, set_is_loading] = useState(true);
+  const [is_toggling_id, set_is_toggling_id] = useState<number | null>(null);
+
+  const load_list = useCallback(async () => {
+    set_is_loading(true);
+    const result = await getUsersAction({ page, limit: LIMITED_SIZE });
+    if (result.ok && result.data) {
+      set_items(result.data.data ?? []);
+      set_total(result.data.total_items);
+    } else {
+      set_items([]);
+    }
+    set_is_loading(false);
+  }, [page]);
 
   useEffect(() => {
-    let cancelled = false;
-    set_is_loading(true);
-    getUsersAction({ page, limit: LIMITED_SIZE }).then((result) => {
-      if (!cancelled) {
-        set_is_loading(false);
-        if (result.ok && result.data) {
-          set_items(result.data.data ?? []);
-          set_total(result.data.total_items);
-        } else {
-          set_items([]);
-        }
+    load_list();
+  }, [load_list]);
+
+  const handle_toggle_state = useCallback(
+    async (user: IUserInfo, next_state: boolean) => {
+      set_is_toggling_id(user.id_user);
+      const result = await updateUserStateAction(user.id_user, next_state);
+      set_is_toggling_id(null);
+      if (result.ok) {
+        toast.success(
+          result.message ??
+            (next_state ? "Usuario habilitado" : "Usuario deshabilitado"),
+        );
+        load_list();
+      } else {
+        toast.error(
+          "message" in result
+            ? (result.message ?? "No se pudo actualizar el estado")
+            : "No se pudo actualizar el estado",
+        );
       }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [page]);
+    },
+    [load_list],
+  );
 
   const total_page = Math.ceil(total / LIMITED_SIZE);
 
@@ -105,6 +135,33 @@ export function UsersTemplate() {
                       : "—"}
                   </td>
                   <td className="px-4 py-3">{user.id_client ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                          user.state
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {user.state ? "Activo" : "Inactivo"}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={is_toggling_id === user.id_user || is_loading}
+                        onClick={() => handle_toggle_state(user, !user.state)}
+                        aria-label={
+                          user.state
+                            ? `Deshabilitar usuario ${user.id_user}`
+                            : `Habilitar usuario ${user.id_user}`
+                        }
+                      >
+                        {user.state ? "Deshabilitar" : "Habilitar"}
+                      </Button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             {!is_loading && items.length === 0 && (

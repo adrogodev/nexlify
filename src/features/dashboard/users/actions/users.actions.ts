@@ -100,7 +100,41 @@ export interface IUpdateUserParams {
   email?: string;
   cell_callsign?: string;
   cell_phone?: string;
+  state?: boolean;
 }
+
+export const updateUserStateAction = async (
+  id_user: number,
+  state: boolean,
+) => {
+  const UPDATE_USER_STATE = `/users/${id_user}`;
+
+  try {
+    const response = await fetchServerClient.put<IBaseResponse<IUserInfo>>(
+      UPDATE_USER_STATE,
+      { state },
+    );
+    if (response.status !== 200) {
+      return {
+        ok: false,
+        message:
+          response.data.message ??
+          (state
+            ? "No se pudo habilitar el usuario"
+            : "No se pudo deshabilitar el usuario"),
+      };
+    }
+
+    return {
+      ok: true,
+      data: response.data.data,
+      message: response.data.message,
+    };
+  } catch (error) {
+    const error_response = await handleApiResponseError(error);
+    return { ok: false, error: error_response };
+  }
+};
 
 export const updateUserAction = async ({
   id_user,
