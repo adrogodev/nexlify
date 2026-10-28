@@ -13,6 +13,39 @@ interface IClientDataDTO {
   is_active: boolean;
 }
 
+export interface IUpdateClientParams {
+  name?: string;
+  email?: string;
+  cell_callsign?: string;
+  cell_phone?: string;
+}
+
+export const updatePortalClientAction = async (params: IUpdateClientParams) => {
+  const CLIENT_UPDATE = "/client/update";
+
+  try {
+    const response = await fetchPortalClient.put<
+      IBaseResponse<{ updated?: boolean }>
+    >(CLIENT_UPDATE, { ...params });
+    if (response.status !== 200) {
+      return {
+        ok: false,
+        message:
+          response.data.message ??
+          "No se pudo actualizar el perfil del cliente",
+      };
+    }
+
+    return {
+      ok: true,
+      message: response.data.message ?? "Perfil actualizado exitosamente",
+    };
+  } catch (error) {
+    const error_response = await handleApiResponseError(error);
+    return { ok: false, error: error_response };
+  }
+};
+
 export const getPortalClientDataAction = async () => {
   const CLIENT_DATA = "/client/data";
 
