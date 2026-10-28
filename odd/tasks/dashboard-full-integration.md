@@ -22,8 +22,8 @@ S6 Ageción order: (1) editar cliente (PUT /client/update), (2) SMTP server (add
 - T5 S5: templates page CRUD. → ✅ create+edit+list verified live (subject E2E edited subject)
 - T6 S5: nexlify keys page. → ✅ generate one-time key + list + revoke verified live
 - T7 S5: users page. → ✅ list + create verified live
-- T8 S5: webhooks page + subscriptions. → ⚠ OUT OF SCOPE for admin front: webhooks/subscriptions/email controllers use EmailAuthGuard (API-key auth for client apps), not the admin AuthGuard; cannot be called from this panel. Belongs to the client-facing app/portal.
-- T9 S5: email pages. → same as T8 (EmailAuthGuard surface, client-side app).
+- T8 S5: webhooks page + subscriptions. → ✅ RESUELTO: EmailAuthGuard también acepta Bearer JWT del admin (guard re-híbrido); live verify: registro con secret una vez + suscripción + listado.
+- T9 S5: email pages. → ✅ live verify: bandeja con filtro de estado, envío real encontrable en el listado con nuevo short_code, detalle con logs y retry, diffuse function.
 - T10: full build + live E2E per section; commit per section. → ✅ final build green with all routes.
 
 ## Log
