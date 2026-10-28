@@ -20,16 +20,16 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noExplicitAny":"off",
-        "noDocumentCookie":"off",
-        "noGlobalIsNan":"off"
+        "noExplicitAny": "off",
+        "noDocumentCookie": "off",
+        "noGlobalIsNan": "off"
       },
-      "complexity":{
-        "noUselessEmptyExport":"off",
-        "useLiteralKeys":"off"
+      "complexity": {
+        "noUselessEmptyExport": "off",
+        "useLiteralKeys": "off"
       },
-      "style":{
-        "noNonNullAssertion":"off"
+      "style": {
+        "noNonNullAssertion": "off"
       }
     },
     "domains": {
